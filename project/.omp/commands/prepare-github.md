@@ -1,78 +1,50 @@
 # prepare-github
 
+## Purpose
 
-    ## Purpose
+Prepare local Issue, PR and Milestone drafts only. This mission never publishes, pushes, merges or tags.
 
-    Prepare local GitHub drafts only. No publication, no push, no merge, no application code changes.
+## Preconditions
 
-    ## Prerequisites
+- state validates;
+- current stage/task context can be determined;
+- requested artifacts do not require exposing secrets or private data.
 
-    - state file exists
-    - current stage/task can be determined from state or docs
+## Exact order
 
-    ## Read first
+1. Read project state, roadmap, current stage README and relevant task contracts.
+2. Run `github-drafter` to create local drafts under `.project-factory/github-outbox/**`.
+3. Verify that drafts trace Stage -> Milestone, Task -> Issue and stage branch -> draft PR.
+4. Verify no application code or unrelated docs changed.
+5. Run `documentation-reviewer` on draft accuracy and record the verdict through `review_report` with `scope=mission`, `id=prepare_github`, role `documentation-reviewer`.
+6. Run `quality_gate` with `scope=mission`, `id=prepare_github`; verdict must be `PASS`.
+7. Optionally commit local outbox/process files through `mission_commit` with mission `prepare_github`.
+8. Stop. Do not publish anything.
 
-    - `.omp/RULES.md`
-    - `docs/PROJECT_STATE.json`
-    - current stage README
-    - relevant task files
-    - `.project-factory/github-outbox/`
+## Allowed changes
 
-    ## State checks
+- `.project-factory/github-outbox/**`
+- `.project-factory/reports/**`
+- `.project-factory/reviews/**`
 
-    - no project phase transition is required by default
-    - if a documentation/process commit is desired, use `mission_commit` with mission type `prepare_github`
+## Forbidden
 
-    ## Exact execution order
+- application code;
+- `git push`, merge, rebase or tag;
+- mutating `gh` or GitHub API commands;
+- automatic Issue, PR or Milestone creation;
+- secrets, tokens, private customer data or internal credentials in drafts.
 
-    1. Read current state and current stage/task context.
-    2. Run `github-drafter`.
-    3. Generate local Issue, PR and Milestone drafts only.
-    4. Verify that only `.project-factory/github-outbox/**` changed unless docs explicitly require summary updates.
-    5. Optionally `mission_commit` the outbox/process diff.
+## Required evidence
 
-    ## Agents and order
+- fresh documentation-reviewer mission report tied to current diff;
+- fresh mission quality report with verdict `PASS`;
+- changed-file scope restricted to local outbox/evidence files.
 
-    - `github-drafter`
+## Final report
 
-    ## Allowed file changes
-
-    - `.project-factory/github-outbox/**`
-    - optional docs summaries required by the repo process
-
-    ## Forbidden file changes
-
-    - application code
-    - push
-    - merge
-    - tag
-    - mutating `gh` commands
-    - publication of Issue/PR/Milestone drafts
-
-    ## Ask the owner when
-
-    - draft contents expose sensitive information
-    - publication is requested, because publication is outside this command
-
-    ## Quality gates
-
-    - local-only outbox files
-    - no mutating GitHub command in scripts or reports
-
-    ## Stop conditions
-
-    - requested action would publish or mutate GitHub
-    - diff escapes outbox/doc scope
-
-    ## Final report format
-
-    - drafts created
-    - files changed
-    - verification run
-    - warnings/blockers
-    - next allowed mission
-
-    ## No automatic next mission
-
-    Do not publish anything automatically.
-
+- drafts created;
+- files changed;
+- verification actually run;
+- warnings about sensitive information;
+- next allowed mission.

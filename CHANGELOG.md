@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.1.0 - 2026-08-06
+
+- fixed OMP skill discovery by moving all `SKILL.md` frontmatter to byte zero
+- added `review_report` guarded tool and reviewer-specific structured evidence
+- fixed sequential task and stage lifecycle so completed work can advance to the next task/stage
+- restricted owner override to the exact pre-block state and added runtime enum validation
+- made `task_commit` enforce stage branch, started HEAD, approved contract, fresh PASS gates, fresh role-bound reviews and rollback on commit failure
+- made `mission_commit` enforce mission state, fresh PASS gate and fresh documentation review
+- hardened quality-gate command validation, package-manager scripts and repository-path/symlink containment
+- replaced destructive install/uninstall behavior with preservation, installation ledger, backups and reversible quarantine
+- added tests for multiple tasks/stages, stale evidence, review provenance, installer preservation and path escapes
+- added GitHub Actions verification and deterministic release metadata generation
+- aligned DESIGN, ROADMAP, PLAN STAGE, RUN TASK, CLOSE STAGE and PREPARE GITHUB with the approved owner workflow
+- Project Atlas intentionally remains out of scope
+
 ## 2.0.1 - 2026-08-06
 
 - rebuilt package structure around the actually present project files

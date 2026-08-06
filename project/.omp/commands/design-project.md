@@ -1,104 +1,71 @@
 # design-project
 
+## Purpose
 
-    ## Purpose
+Run DESIGN only: clarify the product, research current options, resolve material disagreements with the owner, and produce approved governing documentation. Do not write application code.
 
-    Run the DESIGN mission without writing application code.
+## Preconditions
 
-    ## Prerequisites
+- `PROJECT_BRIEF.md` exists.
+- `docs/PROJECT_STATE.json` validates.
+- Project phase is `brief`, or a prior owner block has been explicitly resumed.
+- Work is on a non-protected branch, normally `stage/00-design`.
 
-    - `docs/PROJECT_STATE.json` exists and validates.
-    - Project phase is `brief` or `blocked_owner_decision` resumed by explicit owner override.
-    - `PROJECT_BRIEF.md` exists.
-    - No active implementation task is in progress.
+## Read first
 
-    ## Read first
+- `.omp/RULES.md`
+- `.omp/APPEND_SYSTEM.md`
+- `.omp/WATCHDOG.md`
+- `PROJECT_BRIEF.md`
+- `docs/00-INDEX.md`
+- `docs/PROJECT_STATE.json`
+- existing ADRs
 
-    - `.omp/RULES.md`
-    - `.omp/APPEND_SYSTEM.md`
-    - `.omp/WATCHDOG.md`
-    - `PROJECT_BRIEF.md`
-    - `docs/00-INDEX.md`
-    - `docs/PROJECT_STATE.json`
-    - relevant ADR files if they already exist
+## Exact order
 
-    ## State checks
+1. Validate state and transition `brief -> design_in_progress`.
+2. Restate the product, users, journeys, constraints, contradictions and unknowns.
+3. Ask 5-7 highest-impact owner questions per round; stop while a blocking answer is missing.
+4. Run `stack-researcher` with current primary-source evidence and a decision matrix.
+5. Produce the proposed architecture and run `architecture-critic` independently.
+6. Show material disagreements as options, consequences and a recommendation. Do not force artificial consensus.
+7. Stop for explicit owner decisions where product meaning, cost, security, compliance, migration or lock-in changes.
+8. Transition `design_in_progress -> architecture_owner_review`.
+9. After explicit approval, run `documentation-writer` for the approved docs and stack-specific `AGENTS.md` rules.
+10. Run `documentation-reviewer` against the current diff.
+11. Record its verdict through `review_report` with `scope=mission`, `id=design`, and role `documentation-reviewer`.
+12. If findings are confirmed, run one fresh writer pass, then repeat documentation review and `review_report` for the new diff.
+13. Run `quality_gate` with `scope=mission`, `id=design`; verdict must be `PASS`.
+14. Transition `architecture_owner_review -> architecture_approved`, recording the owner decision summary and architecture version.
+15. Commit documentation/process changes only through `mission_commit` with mission `design`.
+16. Stop. Do not start ROADMAP in this session.
 
-    - validate state schema version 2 with `project_state`
-    - transition project `brief -> design_in_progress`
-    - later transition `design_in_progress -> architecture_owner_review`
-    - after explicit owner approval transition `architecture_owner_review -> architecture_approved`
+## Allowed changes
 
-    ## Exact execution order
+- `PROJECT_BRIEF.md`
+- `docs/**`
+- `.project-factory/**`
+- stack-specific `AGENTS.md`
 
-    1. Restate the product, contradictions and unknowns.
-    2. Ask 5-7 highest-impact owner questions.
-    3. Stop if blocking questions remain unanswered.
-    4. Run `stack-researcher` for current evidence and decision matrix.
-    5. Run `architecture-critic` on the proposed architecture and stack.
-    6. Show substantial disagreements to the owner.
-    7. Stop until owner decisions are explicit.
-    8. Transition project to `architecture_owner_review`.
-    9. After approval, run `documentation-writer` with exact allowed files.
-    10. Run `documentation-reviewer` against produced docs.
-    11. If gaps are confirmed, run one more `documentation-writer` pass and re-review.
-    12. Transition project to `architecture_approved` and record owner decision summary.
-    13. Optionally use `mission_commit` for documentation/process-only changes.
+## Forbidden
 
-    ## Agents and order
+- application code
+- dependency installation
+- migrations or system mutation
+- fabricated research, tests, review or approval
+- starting ROADMAP automatically
 
-    - `stack-researcher`
-    - `architecture-critic`
-    - `documentation-writer`
-    - `documentation-reviewer`
+## Required evidence
 
-    Only one agent runs at a time.
+- explicit owner decisions for material disputes
+- fresh `documentation-reviewer` mission report tied to current `HEAD` and `diff_hash`
+- fresh mission quality report with verdict `PASS`
 
-    ## Allowed file changes
+## Final report
 
-    - `PROJECT_BRIEF.md`
-    - `docs/**`
-    - `.project-factory/**`
-
-    ## Forbidden file changes
-
-    - application code
-    - dependency manifests
-    - lockfiles
-    - `package.json`, `go.mod`, `Cargo.toml`, `pyproject.toml` unless owner explicitly approved system change
-    - `.omp/tools/**`
-
-    ## Ask the owner when
-
-    - product meaning changes
-    - stack choice changes cost, security or lock-in
-    - architecture disagreement changes boundaries or ops model
-    - compliance, privacy or migration decisions are unresolved
-
-    ## Quality gates
-
-    - docs review must be fresh for the current diff
-    - no claimed research without sources
-    - no architecture approval without explicit owner decision
-
-    ## Stop conditions
-
-    - unanswered blocking owner question
-    - unresolved architecture disagreement
-    - docs review still reports material gap after two writer/review cycles
-    - any proposed change escapes documentation/process scope
-
-    ## Final report format
-
-    - decisions
-    - files changed
-    - state transitions
-    - reviewer outcome
-    - verification actually run
-    - blockers/warnings
-    - next allowed mission
-
-    ## No automatic next mission
-
-    Do not start ROADMAP in the same session.
-
+- decisions and unresolved questions
+- files changed
+- state transitions
+- evidence actually produced
+- warnings/blockers
+- next allowed mission
