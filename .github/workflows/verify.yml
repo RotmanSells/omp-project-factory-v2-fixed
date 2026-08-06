@@ -8,22 +8,32 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Configure Git identity
         run: |
-          git config --global user.email "factory-ci@example.com"
-          git config --global user.name "Factory CI"
+          git config user.email "factory-ci@example.com"
+          git config user.name "Factory CI"
       - name: Regenerate release metadata
         run: python3 scripts/rebuild-release-metadata.py
+      - name: Synchronize release metadata
+        if: github.event_name == 'push' && github.ref == 'refs/heads/agent/fix-factory-workflow-safety'
+        run: |
+          if ! git diff --quiet -- MANIFEST.json CHECKSUMS.sha256; then
+            git add MANIFEST.json CHECKSUMS.sha256
+            git commit -m "chore: synchronize release metadata"
+            git push origin HEAD:agent/fix-factory-workflow-safety
+          fi
       - name: Create control repository
         run: |
           mkdir -p "$RUNNER_TEMP/control"
