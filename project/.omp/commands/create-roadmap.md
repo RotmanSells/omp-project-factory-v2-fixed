@@ -1,92 +1,81 @@
 # create-roadmap
 
+## Purpose
+Create a roadmap of independent vertical stages from approved architecture only. Do not write application code or detailed future tasks.
 
-    ## Purpose
+## Prerequisites
+- project phase is `architecture_approved`
+- no owner decision is blocked
+- approved requirements, architecture, security and ADR documents exist
+- working branch is non-protected
 
-    Create or revise a roadmap of independent vertical stages from approved documentation only.
+## Read first
+- `.omp/RULES.md`
+- `.omp/APPEND_SYSTEM.md`
+- `docs/00-INDEX.md`
+- `docs/01-PRODUCT.md`
+- `docs/02-REQUIREMENTS.md`
+- `docs/03-NON-FUNCTIONAL.md`
+- `docs/04-ARCHITECTURE.md`
+- `docs/07-SECURITY.md`
+- `docs/PROJECT_STATE.json`
+- `docs/adr/**`
 
-    ## Prerequisites
+## State checks
+- `architecture_approved -> roadmap_in_progress`
+- after explicit owner acceptance: `roadmap_in_progress -> roadmap_approved`
+- after the roadmap mission commit: `roadmap_approved -> implementation`
 
-    - project phase is `architecture_approved`
-    - no blocked owner decision remains open
-    - documentation index and architecture docs exist
+## Exact execution order
+1. Read only approved product and architecture sources.
+2. Run `roadmap-planner` to draft vertical, demonstrable stages.
+3. Each stage must include outcome, user journey, dependencies, scope, non-scope, components, data/API/security impact, tests, main E2E, risks, demonstration and Definition of Done.
+4. Run `roadmap-critic` independently.
+5. Show material disagreements and consequences to the owner; do not force artificial agreement.
+6. Apply one approved correction pass.
+7. Transition to `roadmap_approved` only after explicit owner acceptance.
+8. Run `quality_gate` with `scope=mission`, `id=roadmap`.
+9. Run `documentation-reviewer`; it must store `mission-roadmap--documentation-reviewer.json` through `review_report` using task id `mission-roadmap`.
+10. If the diff changes, rerun the gate and documentation review.
+11. Run `mission_commit` with `mission=roadmap`.
+12. Transition project to `implementation` and stop.
 
-    ## Read first
+## Planning rules
+- stages are vertical slices, not separate database/API/UI layers
+- every stage ends in a demonstrable working user outcome
+- the whole roadmap is high-level
+- no detailed task contracts are created here
+- Stage N+1 is not detailed before Stage N is done
 
-    - `.omp/RULES.md`
-    - `.omp/APPEND_SYSTEM.md`
-    - `docs/00-INDEX.md`
-    - `docs/01-PRODUCT.md`
-    - `docs/02-REQUIREMENTS.md`
-    - `docs/03-NON-FUNCTIONAL.md`
-    - `docs/04-ARCHITECTURE.md`
-    - `docs/07-SECURITY.md`
-    - `docs/PROJECT_STATE.json`
+## Allowed changes
+- `docs/stages/ROADMAP.md`
+- stage overview documents
+- related approved documentation corrections
+- `docs/PROJECT_STATE.json`
+- `.project-factory/reports/**`
+- `.project-factory/reviews/**`
 
-    ## State checks
+## Forbidden
+- application code
+- dependency installation
+- detailed task files
+- GitHub publication, push, merge or tag
 
-    - transition project `architecture_approved -> roadmap_in_progress`
-    - after roadmap approval transition `roadmap_in_progress -> roadmap_approved`
-    - then transition `roadmap_approved -> implementation`
+## Stop and ask owner when
+- stage order changes business priority
+- a boundary changes a product or release commitment
+- security, privacy, compliance, cost or vendor lock-in remains unresolved
+- critic and planner materially disagree
 
-    ## Exact execution order
+## Final report
+- owner decisions
+- vertical stage list
+- files changed
+- state transitions
+- quality report path
+- documentation review path
+- mission commit SHA
+- blockers/warnings
+- next allowed mission: `/plan-stage <id>` in a new session
 
-    1. Read approved documentation and ADRs.
-    2. Run `roadmap-planner` to draft vertical stages with outcomes and DoD.
-    3. Run `roadmap-critic` against verticality, sequencing, dependencies and risk.
-    4. Escalate only material owner questions.
-    5. Apply approved corrections through one fresh planner pass if needed.
-    6. Write the final roadmap docs.
-    7. Mark roadmap approved.
-    8. Optionally `mission_commit` the documentation/process diff.
-
-    ## Agents and order
-
-    - `roadmap-planner`
-    - `roadmap-critic`
-    - optional `roadmap-planner` correction pass
-
-    ## Allowed file changes
-
-    - `docs/stages/ROADMAP.md`
-    - `docs/**`
-    - `.project-factory/**`
-
-    ## Forbidden file changes
-
-    - application code
-    - future detailed task files beyond the nearest current stage work
-    - GitHub publication
-
-    ## Ask the owner when
-
-    - stage ordering changes business priority
-    - a stage boundary changes product commitment or release sequencing
-    - a stage requires deferred legal/security/compliance decision
-
-    ## Quality gates
-
-    - stages must be vertical slices
-    - every stage must have outcome, scope and Definition of Done
-    - future stages must stay high level
-
-    ## Stop conditions
-
-    - blocking owner decision
-    - unresolved roadmap critique that changes release structure
-    - roadmap becomes horizontal or technology-layer based
-
-    ## Final report format
-
-    - roadmap decisions
-    - stage list
-    - files changed
-    - state transitions
-    - critique outcome
-    - verification actually run
-    - next allowed mission
-
-    ## No automatic next mission
-
-    Do not start stage planning in the same session.
-
+Do not start stage planning in this session.
