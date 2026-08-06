@@ -56,6 +56,7 @@ tools:
     quality_gate: prompt
     task_commit: prompt
     mission_commit: prompt
+    review_report: prompt
 
 bash:
   enabled: true
@@ -73,6 +74,8 @@ bash:
     - { match: "yarn install *", approval: deny }
     - { match: "bun add *", approval: deny }
     - { match: "pip install *", approval: deny }
+    - { match: "python -m pip *", approval: deny }
+    - { match: "python3 -m pip *", approval: deny }
     - { match: "uv add *", approval: deny }
     - { match: "cargo add *", approval: deny }
     - { match: "go get *", approval: deny }
