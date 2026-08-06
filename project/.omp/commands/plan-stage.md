@@ -1,90 +1,52 @@
 # plan-stage
 
+## Purpose
 
-    ## Purpose
+Plan one current vertical stage: keep a short map of the whole stage and fully specify exactly the nearest three tasks.
 
-    Plan the current stage only: full short map plus exactly three nearest detailed tasks.
+## Preconditions
 
-    ## Prerequisites
+- project phase is `implementation`;
+- previous stage is `done` or absent;
+- target stage is the current or first unstarted stage;
+- no unresolved owner block exists.
 
-    - project phase is `implementation`
-    - target stage is current or first unstarted stage
-    - previous stage is `done` or absent
+## Exact order
 
-    ## Read first
+1. Read roadmap, approved architecture, current code, relevant history and state.
+2. Start a new stage at `planning`, or validate the current planning stage.
+3. Run `task-planner` to create the complete short stage map and exactly three detailed task contracts.
+4. Every detailed task must progress `draft -> owner_review -> approved` and include business outcome, scope, non-scope, invariants, contracts, allowed paths, expected commit, tests, docs, risks and reviewer matrix.
+5. Run `task-critic` independently against verticality, size, sequencing, DoD and architecture consistency.
+6. Escalate only decisions that change product outcome, architecture, security, data, migration, operating cost or release meaning.
+7. Apply one fresh planner correction pass where needed.
+8. Run `documentation-reviewer` on the resulting planning diff.
+9. Record its verdict through `review_report` with `scope=mission`, `id=plan_stage`, role `documentation-reviewer`.
+10. Run `quality_gate` with `scope=mission`, `id=plan_stage`; verdict must be `PASS`.
+11. Transition stage `planning -> planned`.
+12. Optionally register the first owner-approved task as `approved`; do not start it.
+13. Commit only through `mission_commit` with mission `plan_stage`.
+14. Stop. Do not start `/run-task` in this session.
 
-    - `.omp/RULES.md`
-    - `docs/stages/ROADMAP.md`
-    - stage README for the target stage
-    - architecture and security docs
-    - `docs/PROJECT_STATE.json`
+## Rules
 
-    ## State checks
+- later stage tasks remain short placeholders;
+- Stage N+1 is not detailed before Stage N is done;
+- 2500-3000 changed lines is a warning ceiling, not a target;
+- one reviewer must be able to understand a task diff as one logical change;
+- no application code, dependency installation or system mutation.
 
-    - create or transition current stage to `planning`
-    - after approval transition stage `planning -> planned`
-    - optionally set `current_task` to the first approved task in `approved` status
+## Required evidence
 
-    ## Exact execution order
+- fresh task-critic result;
+- fresh documentation-reviewer mission report tied to current diff;
+- fresh mission quality report with verdict `PASS`.
 
-    1. Read roadmap, current code, docs and relevant git history.
-    2. Check architecture drift.
-    3. Transition stage to `planning`.
-    4. Run `task-planner` for the stage map and exactly three detailed tasks.
-    5. Run `task-critic` on scope, DoD, tests, docs and reviewer matrix.
-    6. Escalate owner questions only if they change scope or release meaning.
-    7. Apply one correction pass if needed.
-    8. Transition stage to `planned`.
-    9. Optionally `mission_commit` docs/process changes.
+## Final report
 
-    ## Agents and order
-
-    - `task-planner`
-    - `task-critic`
-    - optional `task-planner` correction pass
-
-    ## Allowed file changes
-
-    - `docs/stages/**`
-    - task files for current stage only
-    - `docs/**`
-    - `.project-factory/**`
-
-    ## Forbidden file changes
-
-    - application code
-    - detailed tasks for Stage N+1
-    - dependency or system mutation
-
-    ## Ask the owner when
-
-    - scope split changes customer-visible outcome
-    - security/data/workflow decisions are missing
-    - the current stage should be re-sliced
-
-    ## Quality gates
-
-    - maximum three detailed tasks
-    - every task includes scope, non-scope, invariants, docs, tests, reviewers, expected commit
-    - no architecture drift is hidden
-
-    ## Stop conditions
-
-    - blocking owner decision
-    - stage is horizontal instead of vertical
-    - more than three detailed tasks would be required
-
-    ## Final report format
-
-    - stage outcome
-    - task map
-    - first three detailed tasks
-    - critique outcome
-    - files changed
-    - state transitions
-    - next allowed mission
-
-    ## No automatic next mission
-
-    Do not start `/run-task` in the same session.
-
+- stage outcome and complete short task map;
+- exactly three detailed approved-or-review task contracts;
+- critique and review outcomes;
+- files changed and state transitions;
+- blockers/warnings;
+- next allowed mission.
