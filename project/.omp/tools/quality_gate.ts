@@ -84,7 +84,7 @@ export async function executeQualityGate(pi: PiApi, params: Params, signal?: Abo
     }
     const args = Array.isArray(gate.args) ? gate.args.map(String) : [];
     validateCommand(gate.command, args);
-    const resolvedCwd = ensureInsideRepo(pi.cwd, gate.cwd ?? ".");
+    const resolvedCwd = await ensureInsideRepo(pi.cwd, gate.cwd ?? ".");
     const startedAt = nowIso();
     const startedMs = Date.now();
     const timeout = Math.max(1, Math.min(3600, gate.timeout_sec ?? 900));
