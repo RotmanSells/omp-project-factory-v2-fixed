@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "gates": [
+    {
+      "name": "format",
+      "scopes": ["task", "stage", "mission", "full"],
+      "enabled": false,
+      "cwd": ".",
+      "command": "pnpm",
+      "args": ["format:check"],
+      "timeout_sec": 600,
+      "notes": "Enable and adapt after stack selection."
+    },
+    {
+      "name": "lint",
+      "scopes": ["task", "stage", "mission", "full"],
+      "enabled": false,
+      "cwd": ".",
+      "command": "pnpm",
+      "args": ["lint"],
+      "timeout_sec": 600,
+      "notes": "Enable and adapt after stack selection."
+    },
+    {
+      "name": "typecheck",
+      "scopes": ["task", "stage", "full"],
+      "enabled": false,
+      "cwd": ".",
+      "command": "pnpm",
+      "args": ["typecheck"],
+      "timeout_sec": 600,
+      "notes": "Enable and adapt after stack selection."
+    },
+    {
+      "name": "test",
+      "scopes": ["stage", "full"],
+      "enabled": false,
+      "cwd": ".",
+      "command": "pnpm",
+      "args": ["test"],
+      "timeout_sec": 1200,
+      "notes": "Enable and adapt after stack selection."
+    }
+  ]
+}

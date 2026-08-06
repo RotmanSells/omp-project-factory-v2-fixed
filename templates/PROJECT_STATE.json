@@ -1,0 +1,11 @@
+{
+  "schema_version": 2,
+  "project": {
+    "phase": "brief",
+    "architecture_version": null
+  },
+  "current_stage": null,
+  "current_task": null,
+  "blocked_by": null,
+  "history": []
+}
