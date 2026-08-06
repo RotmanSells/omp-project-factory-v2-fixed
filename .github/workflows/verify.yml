@@ -1,0 +1,50 @@
+name: verify-factory
+
+on:
+  push:
+    branches:
+      - agent/fix-factory-workflow-safety
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Configure Git identity
+        run: |
+          git config --global user.email "factory-ci@example.com"
+          git config --global user.name "Factory CI"
+      - name: Regenerate release metadata
+        run: python3 scripts/rebuild-release-metadata.py
+      - name: Create control repository
+        run: |
+          mkdir -p "$RUNNER_TEMP/control"
+          git init -q "$RUNNER_TEMP/control"
+          git -C "$RUNNER_TEMP/control" config user.email "factory-ci@example.com"
+          git -C "$RUNNER_TEMP/control" config user.name "Factory CI"
+          printf '# control\n' > "$RUNNER_TEMP/control/README.md"
+          git -C "$RUNNER_TEMP/control" add README.md
+          git -C "$RUNNER_TEMP/control" commit -q -m "chore: initialize control repo"
+      - name: Install into control repository
+        run: ./install.sh --apply "$RUNNER_TEMP/control"
+      - name: Verify package and installed payload
+        run: ./verify.sh "$RUNNER_TEMP/control"
+      - name: Exercise reversible uninstall
+        run: ./uninstall.sh --apply "$RUNNER_TEMP/control"
+      - name: Upload generated release metadata
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-metadata
+          path: |
+            MANIFEST.json
+            CHECKSUMS.sha256
+          if-no-files-found: error
