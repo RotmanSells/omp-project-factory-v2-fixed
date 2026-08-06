@@ -1,96 +1,52 @@
 # close-stage
 
+## Purpose
 
-    ## Purpose
+Close the active stage only when its promised user-visible outcome is demonstrable and all stage evidence is fresh.
 
-    Close the active stage after all current-stage tasks are done and stage-level evidence is fresh.
+## Preconditions
 
-    ## Prerequisites
+- project phase is `implementation`;
+- current stage is `active`;
+- all current-stage tasks are `done`;
+- current task is absent or `done`;
+- branch matches `stage/<stage-id>-*`;
+- working tree is clean before closeout work starts.
 
-    - current stage status is `active`
-    - all stage tasks are `done`
-    - branch is correct for the stage
-    - working tree is clean before closeout starts
+## Exact order
 
-    ## Read first
+1. Validate state, task completion and branch.
+2. Transition stage `active -> closing`.
+3. Run stage/integration quality gates and the stage's main E2E scenario.
+4. Run conditional security, data, performance or DevOps reviewers when stage risk requires them; record every verdict through `review_report` with `scope=mission`, `id=close_stage` and the exact reviewer role.
+5. Confirm documentation, rollback, observability, demo script and known limitations.
+6. Run `documentation-reviewer` on the closeout diff and record it through `review_report` with `scope=mission`, `id=close_stage`.
+7. If the promised stage outcome still needs code, create current-stage follow-up task drafts and stop without marking the stage done.
+8. Run `quality_gate` with `scope=mission`, `id=close_stage`; verdict must be `PASS`.
+9. Update roadmap and stage README, then transition `closing -> done`.
+10. Commit documentation/process changes only through `mission_commit` with mission `close_stage`.
+11. Stop. Only a new session may plan the next stage.
 
-    - `.omp/RULES.md`
-    - `docs/PROJECT_STATE.json`
-    - stage README
-    - roadmap file
-    - stage task files
-    - observability, testing and release docs
+## Forbidden
 
-    ## State checks
+- application-code fixes hidden inside closeout;
+- detailed planning of the next stage;
+- skipping failed E2E, reviews or quality gates;
+- GitHub publication, push or merge.
 
-    - transition stage `active -> closing`
-    - after evidence passes transition `closing -> done`
+## Required evidence
 
-    ## Exact execution order
+- all stage tasks completed;
+- fresh stage/integration report with `PASS`;
+- confirmed main E2E;
+- fresh documentation review;
+- applicable specialist reviews tied to current diff.
 
-    1. Validate that all current-stage tasks are done.
-    2. Transition stage to `closing`.
-    3. Run stage/integration quality gates.
-    4. Confirm the main E2E scenario.
-    5. Confirm docs consistency, rollback notes, observability and demo script.
-    6. Run conditional specialists if stage scope requires them.
-    7. If gaps remain, create current-stage follow-up task drafts and stop without closing the stage.
-    8. Transition stage to `done`.
-    9. Update roadmap/readme/state docs.
-    10. Optionally `mission_commit` docs/process changes.
+## Final report
 
-    ## Agents and order
-
-    - optional `documentation-writer`
-    - `documentation-reviewer`
-    - conditional specialist reviewers
-    - optional `github-drafter` for local milestone summary
-
-    ## Allowed file changes
-
-    - stage README
-    - roadmap docs
-    - release/observability/testing docs
-    - `.project-factory/**`
-    - GitHub outbox drafts
-
-    ## Forbidden file changes
-
-    - application code unless explicitly required by an approved follow-up task
-    - planning next stage in detail
-    - GitHub publication
-
-    ## Ask the owner when
-
-    - stage closeout uncovers a release decision
-    - main E2E fails and requires re-slicing the stage
-    - unresolved production risk remains
-
-    ## Quality gates
-
-    - all stage tasks done
-    - fresh integration evidence
-    - main E2E confirmed
-    - docs and demo are consistent
-    - conditional security/load evidence where required
-
-    ## Stop conditions
-
-    - any current-stage task incomplete
-    - E2E not confirmed
-    - unresolved high-severity risk
-    - stage would need follow-up work before being demo-complete
-
-    ## Final report format
-
-    - stage closeout result
-    - evidence run
-    - files changed
-    - state transitions
-    - warnings/blockers
-    - next allowed mission
-
-    ## No automatic next mission
-
-    Do not start the next `/plan-stage` in the same session.
-
+- stage outcome and demonstration result;
+- gates and reviews actually run;
+- files changed and state transitions;
+- known limitations and rollback notes;
+- blockers/warnings;
+- next allowed mission.
